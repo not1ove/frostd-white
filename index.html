@@ -3,209 +3,403 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FROSTD — The Math v2</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<title>FROSTD × AYCS — PROMPT BUILDER</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: #0d0d0d; display: flex; flex-direction: column;
-  align-items: center; padding: 16px; gap: 12px;
-  font-family: 'JetBrains Mono', monospace; color: #fff;
-}
-.stage { width: 100%; max-width: 480px; }
-.slide {
-  container-type: size; container-name: slide;
-  width: 100%; aspect-ratio: 3/4;
-  position: relative; overflow: hidden;
-}
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
 
-/* NOTEBOOK BACKGROUND */
-.notebook-bg {
-  position: absolute; inset: 0;
-  background-color: #FAFAF5;
-  background-image:
-    /* red margin line */
-    linear-gradient(90deg, transparent 12cqw, #FFB3B3 12cqw, #FFB3B3 calc(12cqw + 1px), transparent calc(12cqw + 1px)),
-    /* horizontal ruled lines */
-    repeating-linear-gradient(
-      180deg,
-      transparent,
-      transparent calc(8cqw - 1px),
-      rgba(180,200,230,0.55) calc(8cqw - 1px),
-      rgba(180,200,230,0.55) 8cqw
-    );
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Punch holes */
-.hole {
-  position: absolute;
-  left: 5.5cqw;
-  width: 2.8cqw; height: 2.8cqw;
-  border-radius: 50%;
-  background: #0d0d0d;
-  border: 1px solid rgba(0,0,0,0.15);
-}
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f5;
+    --pink: #ff2d78;
+    --grey: #1a1a1a;
+    --mid: #2a2a2a;
+    --dim: #888;
+  }
 
-.f {
-  position: absolute; inset: 0;
-  padding: 7cqw 7cqw 7cqw 15cqw;
-  display: flex; flex-direction: column;
-  justify-content: space-between;
-}
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
 
-.top {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 2cqw; letter-spacing: 0.18em;
-  color: rgba(10,10,14,0.35);
-  display: flex; justify-content: space-between;
-}
+  header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
 
-.equation { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 0; }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 10vw, 96px);
+    letter-spacing: 0.08em;
+    line-height: 1;
+    color: var(--white);
+  }
 
-.eq-row {
-  display: flex; align-items: center; gap: 3cqw;
-  padding: 2.8cqw 0;
-  border-bottom: 1px solid rgba(10,10,14,0.08);
-}
-.eq-row:last-child { border-bottom: none; }
+  .logo span { color: var(--pink); }
 
-.operator {
-  font-family: 'Archivo Black', sans-serif;
-  font-size: 6.5cqw; color: rgba(10,10,14,0.18);
-  min-width: 6.5cqw; text-align: center; line-height: 1;
-  flex-shrink: 0;
-}
+  .sub {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-top: 8px;
+  }
 
-.eq-label { display: flex; flex-direction: column; gap: 1.2cqw; }
-.eq-label .big {
-  font-family: 'Archivo Black', sans-serif;
-  font-size: 7.5cqw; color: #0A0A0E;
-  letter-spacing: -0.01em; line-height: 0.88;
-}
-/* RED PEN energy for supporting text */
-.eq-label .small {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 2cqw; letter-spacing: 0.12em;
-  color: #CC2200;
-  font-style: italic;
-}
+  .divider {
+    width: 40px;
+    height: 1px;
+    background: var(--pink);
+    margin: 24px auto;
+  }
 
-.result-row {
-  margin-top: 4cqw; padding-top: 4cqw;
-  border-top: 2.5px solid #0A0A0E;
-  display: flex; align-items: center; gap: 3cqw;
-}
-.equals {
-  font-family: 'Archivo Black', sans-serif;
-  font-size: 6.5cqw; color: #0A0A0E; line-height: 1;
-  flex-shrink: 0; min-width: 6.5cqw; text-align: center;
-}
-.result-label { display: flex; flex-direction: column; gap: 1.2cqw; }
-.result-label .wordmark {
-  font-family: 'Archivo Black', sans-serif;
-  font-size: 12cqw; color: #1E5BFF;
-  letter-spacing: -0.02em; line-height: 0.85;
-}
-.result-label .sub {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.9cqw; letter-spacing: 0.14em;
-  color: rgba(10,10,14,0.4);
-}
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
 
-.bottom {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.8cqw; letter-spacing: 0.2em;
-  color: rgba(10,10,14,0.3);
-  display: flex; justify-content: space-between;
-}
+  .card {
+    background: var(--grey);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
 
-.actions { display: flex; gap: 8px; width: 100%; max-width: 480px; }
-.save-btn {
-  flex: 1; background: #1E5BFF; color: white; border: none;
-  padding: 14px; font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; letter-spacing: 0.15em; cursor: pointer; border-radius: 2px;
-}
+  .card:hover { background: var(--mid); }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px; height: 0;
+    background: var(--pink);
+    transition: height 0.3s ease;
+  }
+
+  .card:hover::before { height: 100%; }
+
+  .card-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--pink);
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .card-tag {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 20px;
+  }
+
+  .prompt-versions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .version {
+    background: var(--black);
+    border: 1px solid #222;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .version-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  .version-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .copy-btn {
+    background: none;
+    border: 1px solid #333;
+    color: var(--dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 1px;
+  }
+
+  .copy-btn:hover {
+    border-color: var(--pink);
+    color: var(--pink);
+  }
+
+  .copy-btn.copied {
+    border-color: #00ff88;
+    color: #00ff88;
+  }
+
+  .prompt-text {
+    font-size: 12px;
+    line-height: 1.7;
+    color: #aaa;
+    padding: 14px;
+    font-weight: 300;
+  }
+
+  .prompt-text strong {
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  .note {
+    margin-top: 20px;
+    padding: 12px 14px;
+    border-left: 2px solid var(--pink);
+    background: rgba(255,45,120,0.05);
+  }
+
+  .note-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 4px;
+  }
+
+  .note p {
+    font-size: 11px;
+    color: #888;
+    line-height: 1.6;
+  }
+
+  .how-to {
+    max-width: 1200px;
+    margin: 60px auto 0;
+    padding: 28px 24px;
+    background: var(--grey);
+    border-top: 2px solid var(--pink);
+  }
+
+  .how-to h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .step { }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--pink);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .step p {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.6;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #333;
+    text-transform: uppercase;
+  }
 </style>
 </head>
 <body>
 
-<div class="stage">
-  <div class="slide">
-    <div class="notebook-bg"></div>
+<header>
+  <div class="logo">FROSTD<span>*</span> × AYCS</div>
+  <div class="sub">Outfit Visualisation — Prompt Builder</div>
+  <div class="divider"></div>
+</header>
 
-    <!-- punch holes -->
-    <div class="hole" style="top: 18cqw;"></div>
-    <div class="hole" style="top: 50cqw;"></div>
-    <div class="hole" style="top: 82cqw;"></div>
+<div class="grid" id="cards"></div>
 
-    <div class="f">
-      <div class="top">
-        <span>@frostd.in</span>
-        <span>MUMBAI 2026</span>
-      </div>
-
-      <div class="equation">
-        <div class="eq-row">
-          <div class="operator"></div>
-          <div class="eq-label">
-            <div class="big">ICE CREAM</div>
-            <div class="small">// the kind that never did anything for you</div>
-          </div>
-        </div>
-        <div class="eq-row">
-          <div class="operator">+</div>
-          <div class="eq-label">
-            <div class="big">ALCOHOL</div>
-            <div class="small">// real spirits. frozen in.</div>
-          </div>
-        </div>
-        <div class="eq-row">
-          <div class="operator">+</div>
-          <div class="eq-label">
-            <div class="big">NO RULES</div>
-            <div class="small">// no permissions asked.</div>
-          </div>
-        </div>
-
-        <div class="result-row">
-          <div class="equals">=</div>
-          <div class="result-label">
-            <div class="wordmark">FROSTD</div>
-            <div class="sub">alcoholic gelato · mumbai only · frostd.in</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bottom">
-        <span>DROPS ONLY</span>
-        <span>JOIN THE LIST AT FROSTD.IN</span>
-      </div>
+<div class="how-to">
+  <h3>HOW TO USE</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <p>Copy a prompt version. Each piece has 3 variants — flat lay, worn editorial, or close-up detail.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <p>Open ChatGPT → image generation. Paste the prompt exactly. Upload your reference image if you have one and say "use this as the base garment."</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <p>Generate 4 variations. Pick the closest, bring it back here or iterate with the refinement prompt at the bottom of each card.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <p>Lock the look before going to production. These prompts are the brief — not the final product.</p>
     </div>
   </div>
 </div>
 
-<div class="actions">
-  <button class="save-btn" id="save">↓ SAVE POST</button>
-</div>
+<footer>FROSTD* — NO PERMISSION ASKED</footer>
 
 <script>
-document.getElementById('save').addEventListener('click', async () => {
-  const el = document.querySelector('.slide');
-  const btn = document.getElementById('save');
-  btn.textContent = '...'; btn.disabled = true;
-  try {
-    const canvas = await html2canvas(el, { scale: 3, useCORS: true, backgroundColor: null, logging: false });
-    const a = document.createElement('a');
-    a.download = 'frostd-the-math-notebook.png';
-    a.href = canvas.toDataURL('image/png');
-    a.click();
-    btn.textContent = '✓ SAVED';
-    setTimeout(() => { btn.textContent = '↓ SAVE POST'; btn.disabled = false; }, 1200);
-  } catch(e) {
-    btn.textContent = 'ERROR';
-    setTimeout(() => { btn.textContent = '↓ SAVE POST'; btn.disabled = false; }, 1500);
+const pieces = [
+  {
+    num: "01",
+    title: "CREW JACKET",
+    tag: "Hero piece — all staff",
+    versions: [
+      {
+        label: "Flat Lay — Product Shot",
+        text: `Flat lay product photography of an <strong>oversized acid-wash black zip-up hoodie</strong>, heavy cotton fleece, washed charcoal texture with natural sun-fade variation across the fabric. Shot on a clean white surface, studio lighting from above, slight shadow. On the <strong>left chest: a single small white asterisk symbol (*)</strong>, approximately 2cm, clean screen-print. No other branding, no text, no logos. Streetwear editorial product photography, sharp focus, high resolution, minimalist.`
+      },
+      {
+        label: "Worn — Editorial Street",
+        text: `Editorial streetwear photograph of a young man wearing an <strong>oversized acid-wash black zip-up hoodie</strong>, heavy cotton fleece with washed charcoal texture and natural fade. Worn open over a plain black tee, slim cargo pants. <strong>Small white asterisk (*) printed on left chest.</strong> Shot on a Mumbai street, golden hour, film grain, moody. The jacket reads as crew uniform — intentional, minimal, dark. Skate aesthetic, 18-24 energy.`
+      },
+      {
+        label: "Detail Shot — Branding Close-up",
+        text: `Extreme close-up product detail shot of the <strong>left chest of an acid-wash black hoodie</strong>. Fabric texture visible — washed cotton, slight fade variation. A <strong>single small white asterisk (*) screen-printed on the chest</strong>, clean edges, matte ink on dark fabric. Studio macro photography, sharp focus on the mark, soft background blur. No other text or branding visible.`
+      }
+    ],
+    note: "Reference: Upload Image 2 (the acid-wash zip-up). Tell ChatGPT: 'Use this garment as the base. Keep the acid-wash texture and silhouette. Add a small white asterisk on the left chest only.'"
+  },
+  {
+    num: "02",
+    title: "FOUNDER JACKET",
+    tag: "Day 2 only — Love wears this",
+    versions: [
+      {
+        label: "Flat Lay — Product Shot",
+        text: `Flat lay product photography of an <strong>oversized acid-wash black zip-up hoodie</strong>, identical base to a crew jacket — heavy cotton fleece, washed charcoal with natural fade. Shot on white surface, studio lighting. On the <strong>left chest: '000' in white with a thin pink (#FF2D78) border outline</strong>, clean screen-print, approximately 3cm tall, bold condensed sans-serif. No asterisk. No other branding. Minimal, subtle — you'd only notice if you were close. Streetwear product photography.`
+      },
+      {
+        label: "Worn — Founder POV",
+        text: `Editorial photo of a young South Asian man wearing an <strong>acid-wash black oversized zip-up hoodie</strong> with <strong>'000' printed on the left chest in white with a pink outline</strong>. Worn open, layered over a black tee. Shot indoors, dark ambient venue lighting, slight background blur suggesting a crowd. Confident posture, casual. The '000' mark is subtle — readable only up close. Film grain, moody editorial feel.`
+      },
+      {
+        label: "Side-by-Side Comparison",
+        text: `Two flat lay hoodies side by side on a white surface. Both are <strong>identical acid-wash black oversized zip-up hoodies</strong> — same fabric, same silhouette. Left hoodie has a <strong>small white asterisk (*)</strong> on the left chest. Right hoodie has <strong>'000' in white with a thin pink outline</strong> on the left chest. Clean studio lighting, product photography. Shows the difference between crew version and founder version of the same jacket.`
+      }
+    ],
+    note: "This is yours only on Day 2 (27th). The '000' ties to KOLD Drop 000. Keep it subtle — no one should clock it as a birthday thing, just as an intentional design choice."
+  },
+  {
+    num: "03",
+    title: "BASEBALL TEE",
+    tag: "Layer option — skate aesthetic",
+    versions: [
+      {
+        label: "Flat Lay — Product Shot",
+        text: `Flat lay product photography of a <strong>long-sleeve raglan baseball tee</strong>. Body is <strong>washed navy/slate blue</strong>, sleeves are <strong>off-white/cream</strong>. Heavy cotton, slightly oversized. On the left chest: a <strong>small white asterisk (*)</strong>, clean screen-print. Down the right sleeve, running vertically from shoulder to cuff: <strong>distressed spray-paint style text reading 'FROSTD'</strong>, white, slightly uneven edges as if hand-sprayed. No other branding. Flat lay on white surface, studio light, sharp focus. Streetwear skate aesthetic.`
+      },
+      {
+        label: "Worn Layered — Editorial",
+        text: `Editorial streetwear photo of a young man wearing a <strong>long-sleeve raglan baseball tee with blue body and off-white sleeves</strong>, layered under an open acid-wash black zip-up hoodie. <strong>Small asterisk on left chest, 'FROSTD' spray-painted vertically down the right sleeve.</strong> Slim trousers, chunky sneakers. Shot against a concrete wall, natural daylight, slight overexposure. Peak skate aesthetic, Mumbai street energy, 18-22 demographic.`
+      },
+      {
+        label: "Sleeve Detail — Spray Text",
+        text: `Close-up detail shot of the sleeve of a <strong>blue raglan baseball tee with off-white/cream sleeve</strong>. Running vertically down the sleeve from shoulder toward wrist: <strong>'FROSTD' in distressed spray-paint style lettering</strong>, white ink, slightly uneven, intentionally rough edges, as if stencil-sprayed by hand. Fabric texture visible. Studio macro photography, sharp focus on the text, background out of focus.`
+      }
+    ],
+    note: "Reference: Upload Image 1 (the blue washed hoodie) for the colour tone of blue. Tell ChatGPT: 'Match this blue tone for the body of the tee. Sleeves should be off-white/cream raglan cut.'"
+  },
+  {
+    num: "04",
+    title: "TACTICAL VEST",
+    tag: "Authority look — some crew",
+    versions: [
+      {
+        label: "Flat Lay — Back View",
+        text: `Flat lay product photography of a <strong>black tactical utility vest</strong> — multiple front pockets, velcro panels, structured. Shot from the <strong>back</strong> on a white surface, studio lighting. Centered on the upper back: a <strong>small white asterisk (*)</strong>, clean embroidery or screen-print, approximately 5cm. No text, no other branding. Clean and minimal. Reads as crew/security uniform but designed — streetwear-coded tactical wear.`
+      },
+      {
+        label: "Worn — Security Coded",
+        text: `Editorial photo of a young man wearing a <strong>black tactical utility vest</strong> over a <strong>blue raglan baseball tee</strong>. Vest has multiple front pockets and a structured fit. Shot from a 3/4 angle showing the back — a <strong>small white asterisk (*) visible on the upper back of the vest</strong>. Dark indoor venue setting, crowd blurred in background. He looks like crew/security — authoritative, intentional. The tee sleeves visible underneath. Moody lighting, film grain.`
+      },
+      {
+        label: "Front Detail — Pocket Layout",
+        text: `Close-up editorial shot of the front of a <strong>black tactical utility vest</strong> worn over a dark tee. Multiple velcro pockets, structured chest panels. No visible branding on the front — completely clean. Shot in moody indoor lighting, slight grain. The vest reads as functional-military but styled — not costume, not cosplay. Crew aesthetic, security-coded.`
+      }
+    ],
+    note: "Reference: Upload Image 3 (the Donda vest photo). Tell ChatGPT: 'Use this silhouette and vest style. Remove the 'DONDA' text. Add a small white asterisk (*) centered on the upper back instead.'"
   }
+];
+
+function copyText(btn, text) {
+  const plain = text.replace(/<strong>/g, '').replace(/<\/strong>/g, '');
+  navigator.clipboard.writeText(plain).then(() => {
+    btn.textContent = 'COPIED';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'COPY';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+const grid = document.getElementById('cards');
+
+pieces.forEach(piece => {
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const versionsHTML = piece.versions.map((v, i) => `
+    <div class="version">
+      <div class="version-header">
+        <span class="version-label">V${i+1} — ${v.label}</span>
+        <button class="copy-btn" onclick="copyText(this, \`${v.text.replace(/`/g, '\\`')}\`)">COPY</button>
+      </div>
+      <div class="prompt-text">${v.text}</div>
+    </div>
+  `).join('');
+
+  card.innerHTML = `
+    <div class="card-num">${piece.num}</div>
+    <div class="card-title">${piece.title}</div>
+    <div class="card-tag">${piece.tag}</div>
+    <div class="prompt-versions">${versionsHTML}</div>
+    <div class="note">
+      <div class="note-label">⬆ Reference Note</div>
+      <p>${piece.note}</p>
+    </div>
+  `;
+
+  grid.appendChild(card);
 });
 </script>
 </body>
